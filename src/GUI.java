@@ -3,6 +3,7 @@ import hall.collin.christopher.stl4j.Triangle;
 import processing.core.PApplet;
 import controlP5.*;
 
+import java.awt.EventQueue;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
@@ -19,9 +20,8 @@ public class GUI {
 
     private ArrayList<List<Triangle>> objects = new ArrayList<List<Triangle>>();
     private boolean isMeshAvailable = false;
-
     private ArrayList<Float[]> controls = new ArrayList<Float[]>();
-
+    private File file;
     public GUI(PApplet applet) {
         a = applet;
         cp5 = new ControlP5(a);
@@ -58,8 +58,8 @@ public class GUI {
 
         // Then, create all the sliders
         // Resize Sliders
-        cp5.addSlider("ResizeX"+ objectCounter)
-                .setLabel("Resize X")
+        cp5.addSlider("ScaleX"+ objectCounter)
+                .setLabel("Scale X")
                 .setPosition(width(0.1f),height(0.5f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
@@ -67,8 +67,8 @@ public class GUI {
                 .setMax(maxResize)
                 .setValue(1)
                 .moveTo(newObject);
-        cp5.addSlider("ResizeY"+ objectCounter)
-                .setLabel("Resize Y")
+        cp5.addSlider("ScaleY"+ objectCounter)
+                .setLabel("Scale Y")
                 .setPosition(width(0.1f),height(2.7f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
@@ -76,8 +76,8 @@ public class GUI {
                 .setMax(maxResize)
                 .setValue(1)
                 .moveTo(newObject);
-        cp5.addSlider("ResizeZ"+ objectCounter)
-                .setLabel("Resize Z")
+        cp5.addSlider("ScaleZ"+ objectCounter)
+                .setLabel("Scale Z")
                 .setPosition(width(0.1f),height(4.9f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
@@ -161,9 +161,21 @@ public class GUI {
         return isMeshAvailable;
     }
 
-    public ArrayList<Float[]> getParameters(){
-        ArrayList<Float[]> list = new ArrayList<Float[]>();
-
+    public ArrayList<float[]> getParameters(){
+        ArrayList<float[]> list = new ArrayList<float[]>();
+        for(int i = 0; i < objectCounter; i++) {
+            float scaleX = cp5.getController("ScaleX" + i).getValue();
+            float scaleY = cp5.getController("ScaleY" + i).getValue();
+            float scaleZ = cp5.getController("ScaleZ" + i).getValue();
+            float translateX = cp5.getController("TranslateX" + i).getValue();
+            float translateY = cp5.getController("TranslateY" + i).getValue();
+            float translateZ = cp5.getController("TranslateZ" + i).getValue();
+            float rotateX = cp5.getController("RotateX" + i).getValue();
+            float rotateY = cp5.getController("RotateY" + i).getValue();
+            float rotateZ = cp5.getController("RotateZ" + i).getValue();
+            float[] values = {scaleX, scaleY, scaleZ, translateX, translateY, translateZ, rotateX, rotateY, rotateZ};
+            list.add(values);
+        }
         return list;
     }
 

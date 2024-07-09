@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+
 public class Main extends PApplet{
     VideoEngine engine;
     public void settings(){
@@ -11,7 +12,6 @@ public class Main extends PApplet{
 
     public void draw(){
         engine.update();
-        background(100);
     }
 
     public static void main(String[] args){
