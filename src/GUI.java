@@ -4,12 +4,10 @@ import hall.collin.christopher.stl4j.Vec3d;
 import processing.core.PApplet;
 import controlP5.*;
 
-import java.awt.EventQueue;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,8 +20,6 @@ public class GUI {
 
     private ArrayList<List<Triangle>> objects = new ArrayList<List<Triangle>>();
     private boolean isMeshAvailable = false;
-    private ArrayList<Float[]> controls = new ArrayList<Float[]>();
-    private File file;
     public GUI(PApplet applet) {
         a = applet;
         cp5 = new ControlP5(a);

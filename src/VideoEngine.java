@@ -1,9 +1,6 @@
-import hall.collin.christopher.stl4j.Triangle;
-import hall.collin.christopher.stl4j.Vec3d;
 import processing.core.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class VideoEngine {
     private final PApplet a;
@@ -52,12 +49,10 @@ public class VideoEngine {
                 float[] v0 = projection(v0_r[0], v0_r[1], v0_r[2]);
                 float[] v1 = projection(v1_r[0], v1_r[1], v1_r[2]);
                 float[] v2 = projection(v2_r[0], v2_r[1], v2_r[2]);
-                //a.triangle(v0[0], v0[1], v1[0], v1[1], v2[0], v2[1]);
-                //if(j % 56 == 0){
-                    a.line(v0[0], v0[1],v1[0], v1[1]);
-                    a.line(v0[0], v0[1],v2[0], v2[1]);
-                    a.line(v1[0], v1[1],v2[0], v2[1]);
-                //}
+                a.triangle(v0[0], v0[1], v1[0], v1[1], v2[0], v2[1]);
+                    //a.line(v0[0], v0[1],v1[0], v1[1]);
+                    //a.line(v0[0], v0[1],v2[0], v2[1]);
+                    //a.line(v1[0], v1[1],v2[0], v2[1]);
 
 
             }
@@ -68,7 +63,7 @@ public class VideoEngine {
     private float[] rotate(float[] vertices, float angleX, float angleY, float angleZ){
         float[][] rotationMatrix = new float[][]{
                 {(float)(Math.cos(angleZ) * Math.cos(angleY)), (float)(Math.cos(angleZ) * Math.sin(angleY) * Math.sin(angleX) - Math.sin(angleZ) * Math.cos(angleX)), (float)(Math.cos(angleZ) * Math.sin(angleY) * Math.cos(angleX) + Math.sin(angleZ) * Math.sin(angleY))},
-                {(float)(Math.sin(angleZ) * Math.cos(angleY)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.sin(angleX) - Math.cos(angleZ) * Math.cos(angleX)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.cos(angleX) - Math.cos(angleZ) * Math.sin(angleY))},
+                {(float)(Math.sin(angleZ) * Math.cos(angleY)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.sin(angleX) + Math.cos(angleZ) * Math.cos(angleX)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.cos(angleX) - Math.cos(angleZ) * Math.sin(angleY))},
                 {(float)(-Math.sin(angleY))                  , (float)(Math.cos(angleY) * Math.sin(angleX))                                                         , (float)(Math.cos(angleY) * Math.cos(angleX))}};
         float x_rotated = (rotationMatrix[0][0] * vertices[0] + rotationMatrix[1][0] * vertices[1] + rotationMatrix[2][0] * vertices[2]);
         float y_rotated = (rotationMatrix[0][1] * vertices[0] + rotationMatrix[1][1] * vertices[1] + rotationMatrix[2][1] * vertices[2]);
