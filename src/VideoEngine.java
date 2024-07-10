@@ -10,8 +10,8 @@ public class VideoEngine {
     private final GUI gui;
     private final int minWidth = 500;
     private final int minHeight = 500;
-    private final float focalLength = 50;
-    private ArrayList<List<Triangle>> objects = new ArrayList<List<Triangle>>();
+    private float focalLength = 50;
+    private ArrayList<float[]> objects = new ArrayList<float[]>();
     private ArrayList<float[]> parameters = new ArrayList<float[]>();
     public VideoEngine(PApplet app){
         gui = new GUI(app);
@@ -21,10 +21,12 @@ public class VideoEngine {
     public void update(){
         gui.update();
         parameters = gui.getParameters();
+        focalLength = gui.getFocalLength();
         if(gui.isMeshAvailable()) {
-            objects = gui.getMeshes();
+            objects.add(gui.getMeshes());
         }
-        if(a.millis() % 200 <= 20){renderBasic();}
+        //if(a.millis() % 200 <= 20){renderBasic();}
+        renderBasic();
     }
 
     private void renderBasic(){
@@ -34,40 +36,48 @@ public class VideoEngine {
         a.stroke(64);
         a.strokeWeight(0.5f);
         for(int i = 0; i < objects.size(); i++){
-            List<Triangle> object = objects.get(i);
+            float[] object = objects.get(i);
             float[] parameter = parameters.get(i);
-            for( Triangle polygon : object){
-                Vec3d[] v = polygon.getVertices();
 
-                float[] v0_r = rotate(v[0], parameter[6], parameter[7], parameter[8]);
-                float[] v1_r = rotate(v[1], parameter[6], parameter[7], parameter[8]);
-                float[] v2_r = rotate(v[2], parameter[6], parameter[7], parameter[8]);
+            for(int j = 0; j < object.length; j += 9){
+
+                float[] v0_raw = new float[]{object[j], object[j+1], object[j+2]};
+                float[] v1_raw = new float[]{object[j+3], object[j+4], object[j+5]};
+                float[] v2_raw = new float[]{object[j+6], object[j+7], object[j+8]};
+
+                float[] v0_r = rotate(v0_raw, parameter[6], parameter[7], parameter[8]);
+                float[] v1_r = rotate(v1_raw, parameter[6], parameter[7], parameter[8]);
+                float[] v2_r = rotate(v2_raw, parameter[6], parameter[7], parameter[8]);
 
                 float[] v0 = projection(v0_r[0], v0_r[1], v0_r[2]);
                 float[] v1 = projection(v1_r[0], v1_r[1], v1_r[2]);
                 float[] v2 = projection(v2_r[0], v2_r[1], v2_r[2]);
                 //a.triangle(v0[0], v0[1], v1[0], v1[1], v2[0], v2[1]);
-                a.line(v0[0], v0[1],v1[0], v1[1]);
-                a.line(v0[0], v0[1],v2[0], v2[1]);
-                a.line(v1[0], v1[1],v2[0], v2[1]);
+                //if(j % 56 == 0){
+                    a.line(v0[0], v0[1],v1[0], v1[1]);
+                    a.line(v0[0], v0[1],v2[0], v2[1]);
+                    a.line(v1[0], v1[1],v2[0], v2[1]);
+                //}
+
+
             }
         }
         a.popMatrix();
     }
 
-    private float[] rotate(Vec3d vertice, float angleX, float angleY, float angleZ){
+    private float[] rotate(float[] vertices, float angleX, float angleY, float angleZ){
         float[][] rotationMatrix = new float[][]{
-                {(float)(Math.cos(angleX) * Math.cos(angleY)), (float)(Math.cos(angleX) * Math.sin(angleY) * Math.sin(angleZ) - Math.sin(angleX) * Math.cos(angleZ)), (float)(Math.cos(angleX) * Math.sin(angleY) * Math.cos(angleZ) + Math.sin(angleX) * Math.sin(angleY))},
-                {(float)(Math.sin(angleX) * Math.cos(angleY)), (float)(Math.sin(angleX) * Math.sin(angleY) * Math.sin(angleZ) - Math.cos(angleX) * Math.cos(angleZ)), (float)(Math.sin(angleX) * Math.sin(angleY) * Math.cos(angleZ) - Math.cos(angleX) * Math.sin(angleY))},
-                {(float)(-Math.sin(angleY))                  , (float)(Math.cos(angleY) * Math.sin(angleZ))                                                         , (float)(Math.cos(angleY) * Math.cos(angleZ))}};
-        float x_rotated = (float)(rotationMatrix[0][0] * vertice.x + rotationMatrix[0][1] * vertice.y + rotationMatrix[0][1] * vertice.z);
-        float y_rotated = (float)(rotationMatrix[1][0] * vertice.x + rotationMatrix[1][1] * vertice.y + rotationMatrix[1][1] * vertice.z);
-        float z_rotated = (float)(rotationMatrix[2][0] * vertice.x + rotationMatrix[2][1] * vertice.y + rotationMatrix[2][1] * vertice.z);
+                {(float)(Math.cos(angleZ) * Math.cos(angleY)), (float)(Math.cos(angleZ) * Math.sin(angleY) * Math.sin(angleX) - Math.sin(angleZ) * Math.cos(angleX)), (float)(Math.cos(angleZ) * Math.sin(angleY) * Math.cos(angleX) + Math.sin(angleZ) * Math.sin(angleY))},
+                {(float)(Math.sin(angleZ) * Math.cos(angleY)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.sin(angleX) - Math.cos(angleZ) * Math.cos(angleX)), (float)(Math.sin(angleZ) * Math.sin(angleY) * Math.cos(angleX) - Math.cos(angleZ) * Math.sin(angleY))},
+                {(float)(-Math.sin(angleY))                  , (float)(Math.cos(angleY) * Math.sin(angleX))                                                         , (float)(Math.cos(angleY) * Math.cos(angleX))}};
+        float x_rotated = (rotationMatrix[0][0] * vertices[0] + rotationMatrix[1][0] * vertices[1] + rotationMatrix[2][0] * vertices[2]);
+        float y_rotated = (rotationMatrix[0][1] * vertices[0] + rotationMatrix[1][1] * vertices[1] + rotationMatrix[2][1] * vertices[2]);
+        float z_rotated = (rotationMatrix[0][2] * vertices[0] + rotationMatrix[1][2] * vertices[1] + rotationMatrix[2][2] * vertices[2]);
         return new float[]{x_rotated, y_rotated, z_rotated};
     }
     private float[] projection(float x, float y, float z){
-        float x_projected = (focalLength * x * 10) / (z * 10 + focalLength);
-        float y_projected = (focalLength * y * 10) / (z * 10 + focalLength);
+        float x_projected = (focalLength * x * 10f) / (z * 10f + focalLength);
+        float y_projected = (focalLength * y * 10f) / (z * 10f + focalLength);
         return new float[]{x_projected, y_projected};
     }
 }

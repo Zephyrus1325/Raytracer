@@ -1,5 +1,6 @@
 import hall.collin.christopher.stl4j.STLParser;
 import hall.collin.christopher.stl4j.Triangle;
+import hall.collin.christopher.stl4j.Vec3d;
 import processing.core.PApplet;
 import controlP5.*;
 
@@ -8,6 +9,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -36,6 +38,21 @@ public class GUI {
                 .setWidth(width(20))
                 .setPosition(0,height(2.5f));
 
+        Group newObject = cp5.addGroup("focal_length")
+                .setBackgroundColor(64)
+                .setBackgroundHeight(height(1f))
+                .setLabel("Focal Length");
+
+        cp5.addSlider("focal_slider")
+                .setLabel("Focal Lenght")
+                .setPosition(width(0.1f),height(0.5f))
+                .setHeight(height(2f))
+                .setWidth(width(15f))
+                .setMin(3000)
+                .setMax(10000)
+                .setValue(4000)
+                .moveTo(newObject);
+        objectSelector.addItem(newObject);
     }
 
     //Called by "Add Object" Bang
@@ -152,13 +169,28 @@ public class GUI {
     }
 
     // Communication Funcions
-    public ArrayList<List<Triangle>> getMeshes() {
+    public float[] getMeshes() {
+        List<Triangle> triangles = objects.get(objects.size()-1);
+        float[] vertex = new float[triangles.size() * 9];
+        for(int i = 0; i < triangles.size(); i++){
+            Triangle triangle = triangles.get(i);
+            Vec3d[] vertices = triangle.getVertices();
+            for(int j = 0; j < vertices.length; j++){
+                vertex[(i*9)+(j*3)] = (float)vertices[j].x;
+                vertex[(i*9)+(j*3)+1] = (float)vertices[j].y;
+                vertex[(i*9)+(j*3)+2] = (float)vertices[j].z;
+            }
+        }
         isMeshAvailable = false;
-        return objects;
+        return vertex;
     }
 
     public boolean isMeshAvailable(){
         return isMeshAvailable;
+    }
+
+    public float getFocalLength(){
+        return cp5.getController("focal_slider").getValue();
     }
 
     public ArrayList<float[]> getParameters(){
