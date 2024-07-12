@@ -54,7 +54,8 @@ public class GUI {
     //Called by "Add Object" Bang
     public void addObject(){
         // Constants
-        final float maxResize = 10;
+        final float maxResize = 1;
+        final float minResize = 0;
         final float maxTranslate = 200;
 
         // Request STL File from user
@@ -76,7 +77,7 @@ public class GUI {
                 .setPosition(width(0.1f),height(0.5f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
-                .setMin(-maxResize)
+                .setMin(minResize)
                 .setMax(maxResize)
                 .setValue(1)
                 .moveTo(newObject);
@@ -85,7 +86,7 @@ public class GUI {
                 .setPosition(width(0.1f),height(2.7f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
-                .setMin(-maxResize)
+                .setMin(minResize)
                 .setMax(maxResize)
                 .setValue(1)
                 .moveTo(newObject);
@@ -94,7 +95,7 @@ public class GUI {
                 .setPosition(width(0.1f),height(4.9f))
                 .setHeight(height(2f))
                 .setWidth(width(15f))
-                .setMin(-maxResize)
+                .setMin(minResize)
                 .setMax(maxResize)
                 .setValue(1)
                 .setTriggerEvent(ControlP5Constants.RELEASE)
