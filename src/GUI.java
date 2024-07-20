@@ -20,6 +20,7 @@ public class GUI {
 
     private ArrayList<List<Triangle>> objects = new ArrayList<List<Triangle>>();
     private boolean isMeshAvailable = false;
+    private boolean hasChanged = true;
     public GUI(PApplet applet) {
         a = applet;
         cp5 = new ControlP5(a);
@@ -178,6 +179,7 @@ public class GUI {
                 vertex[(i*9)+(j*3)+2] = (float)vertices[j].z;
             }
         }
+        hasChanged = true;
         isMeshAvailable = false;
         return vertex;
     }
@@ -185,24 +187,41 @@ public class GUI {
     public boolean isMeshAvailable(){
         return isMeshAvailable;
     }
+    public boolean hasChanged(){
+        if(this.hasChanged){
+            this.hasChanged = false;
+            return true;
+        }
+        return false;
+    }
 
     public float getFocalLength(){
+        hasChanged |= cp5.getController("focal_slider").isMousePressed();
         return cp5.getController("focal_slider").getValue();
     }
 
     public ArrayList<float[]> getParameters(){
         ArrayList<float[]> list = new ArrayList<float[]>();
         for(int i = 0; i < objectCounter; i++) {
-            float scaleX = cp5.getController("ScaleX" + i).getValue();
-            float scaleY = cp5.getController("ScaleY" + i).getValue();
-            float scaleZ = cp5.getController("ScaleZ" + i).getValue();
+            float scaleX     = cp5.getController("ScaleX" + i).getValue();
+            float scaleY     = cp5.getController("ScaleY" + i).getValue();
+            float scaleZ     = cp5.getController("ScaleZ" + i).getValue();
             float translateX = cp5.getController("TranslateX" + i).getValue();
             float translateY = cp5.getController("TranslateY" + i).getValue();
             float translateZ = cp5.getController("TranslateZ" + i).getValue();
-            float rotateX = cp5.getController("RotateX" + i).getValue();
-            float rotateY = cp5.getController("RotateY" + i).getValue();
-            float rotateZ = cp5.getController("RotateZ" + i).getValue();
+            float rotateX    = cp5.getController("RotateX" + i).getValue();
+            float rotateY    = cp5.getController("RotateY" + i).getValue();
+            float rotateZ    = cp5.getController("RotateZ" + i).getValue();
             float[] values = {scaleX, scaleY, scaleZ, translateX, translateY, translateZ, rotateX, rotateY, rotateZ};
+            this.hasChanged |= cp5.getController("ScaleX" + i).isMousePressed() ||
+                    cp5.getController("ScaleY" + i).isMousePressed() ||
+                    cp5.getController("ScaleZ" + i).isMousePressed() ||
+                    cp5.getController("TranslateX" + i).isMousePressed() ||
+                    cp5.getController("TranslateY" + i).isMousePressed() ||
+                    cp5.getController("TranslateZ" + i).isMousePressed() ||
+                    cp5.getController("RotateX" + i).isMousePressed() ||
+                    cp5.getController("RotateY" + i).isMousePressed() ||
+                    cp5.getController("RotateZ" + i).isMousePressed();
             list.add(values);
         }
         return list;
